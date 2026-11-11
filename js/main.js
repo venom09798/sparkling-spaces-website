@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    /* ---------- Mobile menu ---------- */
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('nav-menu');
 
@@ -28,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ---------- Scroll handlers (header, active link, back to top) ---------- */
     const header = document.getElementById('header');
     const backToTop = document.getElementById('backToTop');
     const sections = document.querySelectorAll('section[id]');
@@ -61,7 +59,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ---------- Quote form (Web3Forms) ---------- */
     const form = document.getElementById('quote-form');
     const status = document.getElementById('form-status');
 
@@ -109,7 +106,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /* ---------- Reveal on scroll ---------- */
     const revealEls = document.querySelectorAll('.service-card, .review-card, .step, .why-item');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
