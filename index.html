@@ -11,12 +11,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
     <style>
-        .deal-price {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #b7e4c7;
-            margin-top: 10px;
-        }
+        .hp-field { display: none !important; }
+        .form-status { display: none; margin-top: 16px; padding: 12px 16px; border-radius: 10px; font-size: 0.92rem; font-weight: 500; text-align: center; }
+        .form-status.show { display: block; }
+        .form-status.success { background: #e8f5ef; color: #1a5c3a; border: 1px solid #c5e6d4; }
+        .form-status.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
     </style>
 </head>
 <body>
@@ -410,7 +409,11 @@
                     </div>
                 </div>
                 <div class="contact-form-wrapper">
-                    <form class="contact-form" id="quote-form">
+                    <form class="contact-form" id="quote-form" action="https://api.web3forms.com/submit" method="POST">
+                        <input type="hidden" name="access_key" value="68bc6741-5732-4051-8ca7-8f30f26c31f2">
+                        <input type="hidden" name="subject" value="New Quote Request - Sparkling Spaces Tidy Mamas">
+                        <input type="hidden" name="from_name" value="Sparkling Spaces Website">
+                        <input type="checkbox" name="botcheck" class="hp-field" tabindex="-1" autocomplete="off">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="name">Full Name *</label>
@@ -443,6 +446,7 @@
                         <button type="submit" class="btn btn-primary btn-lg btn-block">
                             <i class="fas fa-paper-plane"></i> Send Quote Request
                         </button>
+                        <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
                         <p class="form-note">We’ll get back to you within 24 hours No spam ever.</p>
                     </form>
                 </div>
@@ -621,6 +625,51 @@
         </div>
     </div>
 
+    <script>
+        document.addEventListener('submit', async function (e) {
+            var form = e.target;
+            if (!form || form.id !== 'quote-form') return;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+
+            var status = document.getElementById('form-status');
+            var btn = form.querySelector('button[type="submit"]');
+            var btnHTML = btn.innerHTML;
+
+            function show(type, msg) {
+                status.className = 'form-status show ' + type;
+                status.textContent = msg;
+            }
+
+            var data = Object.fromEntries(new FormData(form).entries());
+            var sel = form.querySelector('#service');
+            data.service = sel.value ? sel.options[sel.selectedIndex].text : 'Not selected';
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            status.className = 'form-status';
+
+            try {
+                var res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                var json = await res.json();
+                if (res.ok && json.success) {
+                    show('success', 'Thank you! Your quote request has been sent. We will contact you within 24 hours.');
+                    form.reset();
+                } else {
+                    show('error', json.message || 'Something went wrong. Please call us at +1 602-823-5741.');
+                }
+            } catch (err) {
+                show('error', 'Network error. Please try again or call us at +1 602-823-5741.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = btnHTML;
+            }
+        }, true);
+    </script>
     <script src="js/main.js"></script>
     <script src="js/theme.js"></script>
 </body>
