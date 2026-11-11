@@ -625,51 +625,6 @@
         </div>
     </div>
 
-    <script>
-        document.addEventListener('submit', async function (e) {
-            var form = e.target;
-            if (!form || form.id !== 'quote-form') return;
-            e.preventDefault();
-            e.stopImmediatePropagation();
-
-            var status = document.getElementById('form-status');
-            var btn = form.querySelector('button[type="submit"]');
-            var btnHTML = btn.innerHTML;
-
-            function show(type, msg) {
-                status.className = 'form-status show ' + type;
-                status.textContent = msg;
-            }
-
-            var data = Object.fromEntries(new FormData(form).entries());
-            var sel = form.querySelector('#service');
-            data.service = sel.value ? sel.options[sel.selectedIndex].text : 'Not selected';
-
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
-            status.className = 'form-status';
-
-            try {
-                var res = await fetch(form.action, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify(data)
-                });
-                var json = await res.json();
-                if (res.ok && json.success) {
-                    show('success', 'Thank you! Your quote request has been sent. We will contact you within 24 hours.');
-                    form.reset();
-                } else {
-                    show('error', json.message || 'Something went wrong. Please call us at +1 602-823-5741.');
-                }
-            } catch (err) {
-                show('error', 'Network error. Please try again or call us at +1 602-823-5741.');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = btnHTML;
-            }
-        }, true);
-    </script>
     <script src="js/main.js"></script>
     <script src="js/theme.js"></script>
 </body>
