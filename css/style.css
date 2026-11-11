@@ -44,6 +44,7 @@
 
 html {
     scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -121,6 +122,7 @@ ul {
 .btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
     padding: 14px 28px;
     border-radius: 50px;
@@ -337,6 +339,7 @@ body.nav-vertical .logo-img {
     justify-content: center;
     font-size: 1.05rem;
     transition: var(--transition);
+    flex-shrink: 0;
 }
 
 .theme-header-btn:hover {
@@ -353,6 +356,7 @@ body.nav-vertical .logo-img {
     border: none;
     cursor: pointer;
     padding: 8px;
+    flex-shrink: 0;
 }
 
 .hamburger span {
@@ -423,6 +427,7 @@ body.nav-vertical .logo-img {
 
 .hero-stats {
     display: flex;
+    flex-wrap: wrap;
     gap: 40px;
 }
 
@@ -731,6 +736,7 @@ body.nav-vertical .logo-img {
 .offers-text h2 {
     font-size: 2.4rem;
     margin-bottom: 16px;
+    line-height: 1.25;
 }
 
 .offers-text > p {
@@ -742,6 +748,7 @@ body.nav-vertical .logo-img {
 .deal-cards {
     display: flex;
     justify-content: center;
+    align-items: stretch;
     gap: 24px;
     margin-bottom: 40px;
     flex-wrap: wrap;
@@ -752,26 +759,43 @@ body.nav-vertical .logo-img {
     backdrop-filter: blur(10px);
     border: 1px solid color-mix(in srgb, var(--on-primary) 25%, transparent);
     border-radius: var(--radius);
-    padding: 28px 40px;
+    padding: 28px 32px;
     text-align: center;
-    min-width: 220px;
+    width: 320px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
 .deal-card h4 {
     font-size: 1.2rem;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
 }
 
 .deal-card p {
-    font-size: 0.9rem;
-    opacity: 0.85;
+    font-size: 0.95rem;
+    opacity: 0.9;
     margin-bottom: 12px;
+    line-height: 1.6;
 }
 
-.discount {
+.deal-card p:last-child {
+    margin-bottom: 0;
+}
+
+.discount,
+.deal-price {
     font-size: 1.8rem;
     font-weight: 700;
     color: color-mix(in srgb, var(--on-primary) 62%, var(--accent));
+}
+
+.deal-price {
+    font-size: 2.2rem;
+    line-height: 1.2;
+    margin-top: 4px;
 }
 
 .reviews-grid {
@@ -826,6 +850,7 @@ body.nav-vertical .logo-img {
     justify-content: center;
     font-weight: 700;
     font-size: 1.1rem;
+    flex-shrink: 0;
 }
 
 .reviewer strong {
@@ -848,6 +873,7 @@ body.nav-vertical .logo-img {
 .cta-content h2 {
     font-size: 2.4rem;
     margin-bottom: 16px;
+    line-height: 1.25;
 }
 
 .cta-content p {
@@ -897,11 +923,17 @@ body.nav-vertical .logo-img {
     display: flex;
     align-items: center;
     gap: 16px;
+    min-width: 0;
+}
+
+.contact-item > div:last-child {
+    min-width: 0;
 }
 
 .contact-icon {
     width: 50px;
     height: 50px;
+    min-width: 50px;
     background: var(--mint);
     border-radius: 14px;
     display: flex;
@@ -921,6 +953,7 @@ body.nav-vertical .logo-img {
 .contact-item a {
     font-weight: 600;
     color: var(--text);
+    overflow-wrap: anywhere;
 }
 
 .contact-item a:hover {
@@ -1073,11 +1106,17 @@ body.nav-vertical .logo-img {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: 0;
+}
+
+.footer-contact a {
+    overflow-wrap: anywhere;
 }
 
 .footer-contact i {
     color: var(--accent);
     width: 18px;
+    flex-shrink: 0;
 }
 
 .footer-bottom {
@@ -1139,6 +1178,7 @@ body.nav-vertical .logo-img {
     .hero-image {
         order: -1;
         max-width: 450px;
+        width: 100%;
         margin: 0 auto;
     }
     
@@ -1148,6 +1188,10 @@ body.nav-vertical .logo-img {
     
     .hero h1 {
         font-size: 2.4rem;
+    }
+
+    .hero-desc {
+        max-width: 100%;
     }
     
     .nav-menu,
@@ -1166,16 +1210,24 @@ body.nav-vertical .logo-img {
         top: 76px;
         left: 0;
         width: 100%;
+        max-height: calc(100vh - 76px);
+        overflow-y: auto;
         background: var(--menu-bg);
         padding: 20px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         gap: 4px;
         white-space: normal;
+        align-items: stretch;
     }
     
     .nav-menu.active .nav-link {
+        display: block;
         width: 100%;
         padding: 14px 16px;
+    }
+
+    .nav-menu.active .nav-link::after {
+        display: none;
     }
     
     .footer-grid {
@@ -1185,6 +1237,16 @@ body.nav-vertical .logo-img {
     .reviews-grid {
         grid-template-columns: 1fr;
     }
+
+    .why-image {
+        max-width: 520px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .why-image img {
+        height: 440px;
+    }
     
     .experience-badge {
         left: 20px;
@@ -1193,62 +1255,281 @@ body.nav-vertical .logo-img {
 }
 
 @media (max-width: 600px) {
+    .container {
+        padding: 0 18px;
+    }
+
     .section {
-        padding: 70px 0;
+        padding: 60px 0;
+    }
+
+    .section-header {
+        margin-bottom: 40px;
     }
     
     .section-header h2,
     .why-content h2,
     .contact-info h2 {
-        font-size: 1.8rem;
+        font-size: 1.7rem;
+    }
+
+    .section-header p,
+    .why-intro {
+        font-size: 1rem;
+    }
+
+    .navbar {
+        height: 68px;
+        gap: 10px;
+    }
+
+    .nav-menu.active {
+        top: 68px;
+        max-height: calc(100vh - 68px);
+    }
+
+    .logo {
+        gap: 8px;
+        min-width: 0;
+        flex-shrink: 1;
+    }
+
+    .logo-img {
+        height: 42px;
+    }
+
+    .logo-main {
+        font-size: 0.72rem;
+        letter-spacing: 0.8px;
+    }
+
+    .logo-sub {
+        font-size: 0.58rem;
+        letter-spacing: 1.8px;
     }
     
     .hero {
-        padding: 120px 0 60px;
+        padding: 104px 0 50px;
+    }
+
+    .hero .container {
+        gap: 28px;
+    }
+
+    .hero-card img {
+        height: 300px;
+    }
+
+    .floating-badge {
+        left: 14px;
+        bottom: 14px;
+        padding: 9px 14px;
+        font-size: 0.8rem;
+    }
+
+    .hero-badge {
+        font-size: 0.78rem;
+        padding: 7px 14px;
+        margin-bottom: 18px;
+        line-height: 1.4;
     }
     
     .hero h1 {
         font-size: 1.9rem;
     }
+
+    .hero-desc {
+        font-size: 1rem;
+        margin-bottom: 24px;
+    }
+
+    .hero-btns {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 32px;
+    }
+
+    .hero-btns .btn {
+        width: 100%;
+    }
+
+    .btn-lg {
+        padding: 14px 24px;
+        font-size: 0.95rem;
+    }
     
     .hero-stats {
-        gap: 24px;
+        gap: 20px 28px;
+    }
+
+    .stat strong {
+        font-size: 1.35rem;
     }
     
     .services-grid {
         grid-template-columns: 1fr;
     }
+
+    .service-card {
+        padding: 30px 22px;
+    }
+
+    .why-image img {
+        height: 320px;
+    }
+
+    .experience-badge {
+        padding: 14px 18px;
+        left: 14px;
+        bottom: 14px;
+    }
+
+    .experience-badge .num {
+        font-size: 1.7rem;
+    }
     
     .process-steps {
         grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .step-num {
+        font-size: 2.4rem;
+        margin-bottom: 10px;
+    }
+
+    .offers,
+    .cta-banner {
+        padding: 56px 0;
+    }
+
+    .offers-text h2,
+    .cta-content h2 {
+        font-size: 1.7rem;
+    }
+
+    .offers-text > p,
+    .cta-content p {
+        font-size: 1rem;
+        margin-bottom: 28px;
     }
     
     .form-row {
         grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 16px;
     }
     
     .contact-form-wrapper {
-        padding: 28px 20px;
+        padding: 26px 18px;
     }
     
+    .footer {
+        padding-top: 50px;
+    }
+
     .footer-grid {
         grid-template-columns: 1fr;
+        gap: 32px;
+        margin-bottom: 36px;
+    }
+
+    .footer .logo-img {
+        height: 60px;
     }
     
+    .trust-bar {
+        padding: 24px 0;
+    }
+
     .trust-items {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px 12px;
         justify-content: center;
         text-align: center;
+    }
+
+    .trust-item:last-child {
+        grid-column: 1 / -1;
     }
     
     .trust-item {
         flex-direction: column;
+        justify-content: flex-start;
         gap: 6px;
-        font-size: 0.85rem;
+        font-size: 0.82rem;
     }
     
     .deal-cards {
         flex-direction: column;
         align-items: center;
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+
+    .deal-card {
+        width: 100%;
+        padding: 24px 20px;
+    }
+
+    .deal-price {
+        font-size: 2rem;
+    }
+
+    .cta-btns {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .cta-btns .btn {
+        width: 100%;
+    }
+
+    .offers-text .btn {
+        width: 100%;
+    }
+
+    .contact-item {
+        gap: 12px;
+    }
+
+    .contact-item a {
+        font-size: 0.92rem;
+    }
+
+    .back-to-top {
+        bottom: 18px;
+        right: 18px;
+        width: 44px;
+        height: 44px;
+    }
+}
+
+@media (max-width: 380px) {
+    .logo-text {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 1.65rem;
+    }
+
+    .hero-badge {
+        font-size: 0.72rem;
+    }
+
+    .section-header h2,
+    .why-content h2,
+    .contact-info h2,
+    .offers-text h2,
+    .cta-content h2 {
+        font-size: 1.5rem;
     }
 }
 
@@ -1300,6 +1581,7 @@ body.nav-vertical .logo-img {
     width: 360px;
     max-width: 95vw;
     height: 100vh;
+    height: 100dvh;
     background: #fff;
     z-index: 1300;
     box-shadow: -10px 0 40px rgba(0,0,0,0.15);
@@ -1737,7 +2019,8 @@ body:is(.has-bg-image, .flat) .deal-card {
     border: 1px solid var(--border);
 }
 
-body:is(.has-bg-image, .flat) .discount {
+body:is(.has-bg-image, .flat) .discount,
+body:is(.has-bg-image, .flat) .deal-price {
     color: var(--primary-text);
 }
 
@@ -1979,14 +2262,29 @@ body.nav-vertical .hero {
         margin-bottom: 0;
         padding-bottom: 0;
     }
+    body.nav-vertical .logo-img {
+        height: 44px;
+    }
+    body.nav-vertical .logo-text {
+        align-items: flex-start;
+    }
     body.nav-vertical .nav-menu {
         display: none;
     }
     body.nav-vertical .nav-menu.active {
         display: flex;
+        position: static;
+        flex: 0 0 100%;
+        width: 100%;
+        max-height: none;
+        box-shadow: none;
+        padding: 12px 0 0;
     }
     body.nav-vertical .hamburger {
         display: flex !important;
+    }
+    body.nav-vertical .hero {
+        padding-top: 110px;
     }
 }
 
