@@ -1,121 +1,143 @@
 document.addEventListener('DOMContentLoaded', function () {
+    /* ---------- Mobile menu ---------- */
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('nav-menu');
 
+    function closeMenu() {
+        if (!navMenu || !hamburger) return;
+        navMenu.classList.remove('active');
+        hamburger.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
+    }
+
     if (hamburger && navMenu) {
+        hamburger.setAttribute('aria-expanded', 'false');
+
         hamburger.addEventListener('click', () => {
-            navMenu.classList.toggle('active');
-            hamburger.classList.toggle('active');
+            const open = navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active', open);
+            hamburger.setAttribute('aria-expanded', String(open));
         });
 
         navMenu.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                navMenu.classList.remove('active');
-                hamburger.classList.remove('active');
-            });
+            link.addEventListener('click', closeMenu);
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 900) closeMenu();
         });
     }
 
+    /* ---------- Scroll handlers (header, active link, back to top) ---------- */
     const header = document.getElementById('header');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
-    });
-
+    const backToTop = document.getElementById('backToTop');
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    window.addEventListener('scroll', () => {
+    function onScroll() {
+        const y = window.scrollY;
+
+        if (header) header.classList.toggle('scrolled', y > 50);
+        if (backToTop) backToTop.classList.toggle('visible', y > 400);
+
         let current = '';
         sections.forEach(section => {
-            const sectionTop = section.offsetTop - 120;
-            if (window.scrollY >= sectionTop) {
+            if (y >= section.offsetTop - 120) {
                 current = section.getAttribute('id');
             }
         });
 
         navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (link.getAttribute('href') === `#${current}`) {
-                link.classList.add('active');
-            }
-        });
-    });
-
-    const backToTop = document.getElementById('backToTop');
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 400) {
-            backToTop.classList.add('visible');
-        } else {
-            backToTop.classList.remove('visible');
-        }
-    });
-
-    backToTop.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    const form = document.getElementById('quote-form');
-    if (form) {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const name = document.getElementById('name').value.trim();
-            const phone = document.getElementById('phone').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const service = document.getElementById('service').value;
-            const message = document.getElementById('message').value.trim();
-
-            const subject = encodeURIComponent('New Quote Request - Sparkling Spaces Tidy Mamas');
-            const body = encodeURIComponent(
-                `Name: ${name}\nPhone: ${phone}\nEmail: ${email}\nService: ${service || 'Not specified'}\n\nMessage:\n${message}`
-            );
-
-            window.location.href = `mailto:sparklingspacetidymamas@gmail.com?subject=${subject}&body=${body}`;
-
-            const btn = form.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-check"></i> Request Sent!';
-            btn.style.background = '#2d8a5a';
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = '';
-                form.reset();
-            }, 3000);
+            link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
         });
     }
 
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('animate-in');
-                observer.unobserve(entry.target);
+    if (backToTop) {
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    /* ---------- Quote form (Web3Forms) ---------- */
+    const form = document.getElementById('quote-form');
+    const status = document.getElementById('form-status');
+
+    function showStatus(type, msg) {
+        if (!status) return;
+        status.className = 'form-status show ' + type;
+        status.textContent = msg;
+    }
+
+    if (form) {
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const btn = form.querySelector('button[type="submit"]');
+            const originalHTML = btn.innerHTML;
+
+            const data = Object.fromEntries(new FormData(form).entries());
+            const sel = form.querySelector('#service');
+            data.service = sel && sel.value ? sel.options[sel.selectedIndex].text : 'Not selected';
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            if (status) status.className = 'form-status';
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const json = await res.json();
+
+                if (res.ok && json.success) {
+                    showStatus('success', 'Thank you! Your quote request has been sent. We will contact you within 24 hours.');
+                    form.reset();
+                } else {
+                    showStatus('error', json.message || 'Something went wrong. Please call us at +1 602-823-5741.');
+                }
+            } catch (err) {
+                showStatus('error', 'Network error. Please try again or call us at +1 602-823-5741.');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
             }
         });
-    }, observerOptions);
+    }
 
-    document.querySelectorAll('.service-card, .review-card, .step, .why-item').forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-        observer.observe(el);
-    });
+    /* ---------- Reveal on scroll ---------- */
+    const revealEls = document.querySelectorAll('.service-card, .review-card, .step, .why-item');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const style = document.createElement('style');
-    style.textContent = `
-        .animate-in {
-            opacity: 1 !important;
-            transform: translateY(0) !important;
-        }
-    `;
-    document.head.appendChild(style);
+    if (revealEls.length && 'IntersectionObserver' in window && !reduceMotion) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const el = entry.target;
+
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+
+                // Clear inline styles afterwards so the CSS hover effects work again
+                setTimeout(() => {
+                    el.style.transition = '';
+                    el.style.opacity = '';
+                    el.style.transform = '';
+                }, 700);
+
+                observer.unobserve(el);
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        revealEls.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    }
 });
